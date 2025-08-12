@@ -1,0 +1,40 @@
+<div class="morpheus-plugin-cloud-links" style="display:flex; gap:12px; flex-wrap:wrap; align-items:center; position:relative; z-index:2;">
+  {{#if links.length}}
+    {{#each links}}
+      <a href="{{this.href}}"
+         class="btn btn-primary btn-lg"
+         target="_blank"
+         rel="noopener noreferrer"
+         data-external="true"
+         style="pointer-events:auto; cursor:pointer;"
+         aria-label="{{this.label}}">
+        {{this.label}}
+      </a>
+    {{/each}}
+  {{else}}
+    <div style="opacity:0.8; font-size: 0.95rem;">{{#if info}}{{info}}{{else}}No cloud links available for this instance.{{/if}}</div>
+  {{/if}}
+</div>
+<script>
+(function(){
+  try {
+    var container = document.currentScript && document.currentScript.previousElementSibling;
+    if (!container || !container.querySelectorAll) return;
+    var links = container.querySelectorAll('a[data-external="true"]');
+    links.forEach(function(a){
+      a.addEventListener('click', function(e){
+        try {
+          // Allow default when not intercepted; otherwise open explicitly
+          if (!a.getAttribute('href')) return;
+          e.stopPropagation();
+          // Some hosts call preventDefault; ensure we open regardless
+          var w = window.open(a.href, '_blank', 'noopener,noreferrer');
+          if (w && w.focus) { w.focus(); }
+          // Prevent SPA router from hijacking
+          e.preventDefault();
+        } catch(_){}
+      }, {capture:true});
+    });
+  } catch(_){}
+})();
+</script>

@@ -1,0 +1,51 @@
+plugins {
+  id 'java'
+  id 'com.github.johnrengelman.shadow' version '8.1.1'
+}
+
+repositories { mavenCentral() }
+
+java {
+  toolchain { languageVersion = JavaLanguageVersion.of(17) }
+}
+
+// Allow CI to override version from tag
+if (System.getenv('PLUGIN_VERSION')) {
+  version = System.getenv('PLUGIN_VERSION')
+}
+
+dependencies {
+  compileOnly "com.morpheusdata:morpheus-plugin-api:1.2.8"
+  testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+}
+
+configurations.configureEach {
+  resolutionStrategy.eachDependency { d ->
+    if (d.requested.group == 'com.morpheusdata' &&
+        d.requested.name == 'morpheus-plugin-api' &&
+        d.requested.version != '1.2.8') {
+      throw new GradleException("morpheus-plugin-api must be 1.2.8, found ${d.requested.version}")
+    }
+  }
+}
+
+tasks.withType(Test).configureEach {
+  useJUnitPlatform()
+}
+
+jar {
+  manifest {
+    attributes(
+      'Implementation-Title': 'Morpheus Cloud Links Tab',
+      'Implementation-Version': project.version,
+      'Plugin-Class': 'com.example.morpheus.plugin.SecuritySustainabilityTabPlugin'
+    )
+  }
+}
+
+shadowJar {
+  archiveBaseName.set('morpheus-cloud-links-tab')
+  archiveClassifier.set('all')
+  archiveVersion.set(project.version as String)
+  minimize()
+}
