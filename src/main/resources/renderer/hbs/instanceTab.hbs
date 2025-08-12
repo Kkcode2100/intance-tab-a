@@ -1,0 +1,14 @@
+<div style="display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
+  {{#if links.length}}
+    {{#each links}}
+      <a href="{{this.href}}"
+         class="btn btn-primary btn-lg"
+         target="_blank" rel="noopener noreferrer"
+         aria-label="{{this.label}}">
+        {{this.label}}
+      </a>
+    {{/each}}
+  {{else}}
+    <div style="opacity:0.8; font-size: 0.95rem;">{{#if info}}{{info}}{{else}}No cloud links available for this instance.{{/if}}</div>
+  {{/if}}
+</div>
